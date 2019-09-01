@@ -7,20 +7,25 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 
 class guiController extends JFrame {
-
-    private JPanel grid = new JPanel(new GridLayout(9, 9));
+/*
+This class handle GUI related functions and also allows GUI refresh whenever any move is taken by AI
+ */
+    private JPanel grid = new JPanel(new GridLayout(9, 9)); //Grid layout
     private JPanel buttons = new JPanel(new GridLayout(2, 1));
-    private JTextField[][] fieldArray = new JTextField[9][9];
+    private JTextField[][] fieldArray = new JTextField[9][9]; //array of fields for easy extraction
 
-    private sudokuInitializer sud = new sudokuInitializer();
+    private sudokuInitializer sud = new sudokuInitializer(); //initializes array from file
     private int flag;
 
     guiController() {
-        flag = chooseInputStream();
-        guiInit();
+        flag = chooseInputStream(); //choose input method
+        guiInit();//Initializes GUI
         //sud.printArray();
     }
-
+/*
+Function to display GUI for the user to choose input method method
+File or Manual
+ */
     private int chooseInputStream() {
         String[] options = new String[]{"File", "Manual"};
         int response = JOptionPane.showOptionDialog(null, "Choose one way", "",
@@ -30,13 +35,15 @@ class guiController extends JFrame {
         if (response == 0) {
             try {
                 sud.fileInput();
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null,"Critical Error");
             }
         }
         return response;
     }
-
+/*
+Initializes GUI with the given content from the array
+ */
     private void guiInit() {
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
@@ -65,39 +72,48 @@ class guiController extends JFrame {
 
         }
         add(grid);
-        JButton solve = new JButton("Solve");
+        JButton solve = new JButton("Solve");//Button to compute
         solve.setBorder(null);
         solve.setBackground(Color.white);
         buttons.add(solve);
         buttons.add(new JLabel());
         buttons.setBackground(Color.white);
         add(buttons, BorderLayout.SOUTH);
-        solve.addActionListener(e -> {
-            if (flag != 0)
-                getText();
-            sud.printArray();
-            solve.setEnabled(false);
+        solve.addActionListener(e -> { //If the button is pressed
+            if (flag != 0) {
+                try {
+                    getText(); //takes in text from the GUI
+                    sud.printArray(); //debugging purpose
+                    solve.setEnabled(false);//cell value becomes fixed
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null,"Invalid Input");//Throws error if the input is invalid
+                }
+            }
         });
-
+        //Basic Frame parameters are set below this
         setSize(400, 500);
-        //setVisible(true);
+        //setVisible(true);//done in Main function
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
     }
-
-    private void getText() {
+/*
+takes in valid input and sets the GUI cells as non editable
+ */
+    private void getText() throws Exception{
         String temp;
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
                     temp = fieldArray[i][j].getText();
                     if (!temp.equals("")) {
-                        Main.sudoku_array[i][j] = Integer.parseInt(temp);
-                        fieldArray[i][j].setEditable(false);
+                            Main.sudoku_array[i][j] = sud.checkValidInput(temp); //throws exception
+                            fieldArray[i][j].setEditable(false);
                     }
             }
         }
     }
-
+/*
+Refreshes the GUI whenever AI makes some changes
+ */
     void refreshGUI(){
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
