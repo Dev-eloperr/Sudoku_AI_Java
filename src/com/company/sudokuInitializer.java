@@ -8,7 +8,7 @@ class sudokuInitializer {
 
     /*
     Function to check whether the input given via file or manually is valid or not
-    Thorws exception for Invalid Input
+    Throws exception for Invalid Input
      */
     boolean checkValidInput(String input) throws Exception{
         int n = Integer.parseInt(input+"");

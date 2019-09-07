@@ -113,6 +113,11 @@ Initializes GUI with the given content from the array
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
     }
+    /*
+    \Function below clears the GUI
+    sets the array to 0
+    and textfields to null
+     */
     private void clearGUI(){
         for (int i = 0; i < 9; i++)
             for (int j = 0; j < 9; j++) {
