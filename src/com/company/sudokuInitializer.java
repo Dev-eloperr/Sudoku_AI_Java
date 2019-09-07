@@ -3,6 +3,7 @@ package com.company;
 import javax.swing.*;
 import java.io.*;
 import java.awt.Point;
+import java.util.Arrays;
 
 class sudokuInitializer {
 
@@ -46,7 +47,10 @@ class sudokuInitializer {
             String stt;
             int i=0;
             while (((stt = br.readLine())) != null){ //while file has content
+                stt = stt.replace(",","");
+                System.out.println(stt);
                 st.insert(0,stt);
+                System.out.println(st);
                 for (int j=0;j<st.length();j++){
                     try {
                         if(checkValidInput(st.charAt(j)+"")) {
@@ -56,6 +60,7 @@ class sudokuInitializer {
                             Main.points.add(new Point(i, j));
                     }catch (Exception E){
                         JOptionPane.showMessageDialog(null,"Error in extracting data from file\nExiting...");
+                        E.printStackTrace();
                         System.exit(1);
                     }
                 }
