@@ -14,6 +14,10 @@ class solver implements Runnable{ //Implemented as a Thread to avoid freezing an
             Main.gui.sud.printArray();
 
     }
+    int delay_time=5;
+    solver(int time){
+        delay_time=time;
+    }
     /*
     This function creates a map for all the 9 boxes
     Sorts them, and creates a new arraylist of points which are sorted according to the boxes
@@ -139,7 +143,7 @@ This function is soleley used for sorting the MAP by using list and default coll
      */
     private void timer(){
         try {
-            Thread.sleep(5); //CHANGE DELAY TIME HERE , SET minimum 5ms for noticable difference and faster result
+            Thread.sleep(delay_time); //CHANGE DELAY TIME HERE , SET minimum 5ms for noticable difference and faster result
             //Thread.sleep(10000);
         } catch (InterruptedException e) {
             e.printStackTrace();

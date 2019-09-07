@@ -8,7 +8,7 @@ class guiController extends JFrame implements Runnable{
 This class handle GUI related functions and also allows GUI refresh whenever any move is taken by AI
  */
     private JPanel grid = new JPanel(new GridLayout(9, 9)); //Grid layout
-    private JPanel buttons = new JPanel(new GridLayout(1, 2));
+    private JPanel buttons = new JPanel(new GridLayout(2, 2));
     private JTextField[][] fieldArray = new JTextField[9][9]; //array of fields for easy extraction
 
     sudokuInitializer sud = new sudokuInitializer(); //initializes array from file
@@ -69,6 +69,13 @@ Initializes GUI with the given content from the array
 
         }
         add(grid);
+
+        JLabel timer_delay = new JLabel("Set Delay(in ms)");
+        JTextField delay_input = new JTextField("5");
+        timer_delay.setHorizontalAlignment(SwingConstants.CENTER);
+        buttons.add(timer_delay);
+        buttons.add(delay_input);
+
         JButton solve = new JButton("Solve");//Button to compute
         JButton Clear = new JButton("Clear");//Button to compute
         solve.setBorder(null);
@@ -80,21 +87,37 @@ Initializes GUI with the given content from the array
             if (flag != 0) {
                 try {
                     getText(); //takes in text from the GUI
+
+                    sud.printArray(); //debugging purpose
+                    solve.setEnabled(false);//cell value becomes fixed
+                    solver solver = new solver(Integer.parseInt(delay_input.getText()));
+                    Thread t2 = new Thread(solver);
+                    t2.start();
+                    System.out.println("Solving...");
+                    Clear.setEnabled(false);
+
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(null,"Invalid Input");//Throws error if the input is invalid
                     clearGUI();
-                    flag=-1;
+                    //flag=-1;
+                }
+            }else {
+                try {
+                    sud.printArray(); //debugging purpose
+                    solve.setEnabled(false);//cell value becomes fixed
+                    solver solver = new solver(Integer.parseInt(delay_input.getText()));
+                    Thread t2 = new Thread(solver);
+                    t2.start();
+                    System.out.println("Solving...");
+                    Clear.setEnabled(false);
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null,"Invalid Input");//Throws error if the input is invalid
+                    clearGUI();
+                    //flag=-1;
                 }
             }
-            if (flag!=-1) {
-                sud.printArray(); //debugging purpose
-                solve.setEnabled(false);//cell value becomes fixed
-                solver solver = new solver();
-                Thread t2 = new Thread(solver);
-                t2.start();
-                System.out.println("Solving...");
-                Clear.setEnabled(false);
-            }
+
         });
 
 
@@ -106,12 +129,15 @@ Initializes GUI with the given content from the array
 
         });
 
-        buttons.setPreferredSize(new Dimension(400,50));
+
+        buttons.setPreferredSize(new Dimension(450,100));
         //Basic Frame parameters are set below this
-        setSize(400, 500);
+        setSize(450, 550);
         //setVisible(true);//done in Main function
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
+        if (flag==0)
+            Clear.setEnabled(false);
     }
     /*
     \Function below clears the GUI
