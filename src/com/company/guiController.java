@@ -13,6 +13,7 @@ This class handle GUI related functions and also allows GUI refresh whenever any
 
     sudokuInitializer sud = new sudokuInitializer(); //initializes array from file
     private int flag;
+    private Runnable callSolver;
 
     public void run() {
         flag = chooseInputStream(); //choose input method
@@ -90,14 +91,8 @@ Initializes GUI with the given content from the array
             if (flag != 0) {
                 try {
                     getText(); //takes in text from the GUI
+                    callSolver.run();
 
-                    sud.printArray(); //debugging purpose
-                    solve.setEnabled(false);//cell value becomes fixed
-                    solver solver = new solver(Integer.parseInt(delay_input.getText()));
-                    Thread t2 = new Thread(solver);
-                    t2.start();
-                    System.out.println("Solving...");
-                    Clear.setEnabled(false);
 
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(null,"Invalid Input");//Throws error if the input is invalid
@@ -106,13 +101,7 @@ Initializes GUI with the given content from the array
                 }
             }else {
                 try {
-                    sud.printArray(); //debugging purpose
-                    solve.setEnabled(false);//cell value becomes fixed
-                    solver solver = new solver(Integer.parseInt(delay_input.getText()));
-                    Thread t2 = new Thread(solver);
-                    t2.start();
-                    System.out.println("Solving...");
-                    Clear.setEnabled(false);
+                    callSolver.run();
 
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(null,"Invalid Input");//Throws error if the input is invalid
@@ -141,7 +130,21 @@ Initializes GUI with the given content from the array
         setLocationRelativeTo(null);
         if (flag==0)
             Clear.setEnabled(false);
+
+        /*
+        This lambda expression calls solver Class and passes the array
+         */
+        callSolver = () -> {
+            sud.printArray(); //debugging purpose
+            solve.setEnabled(false);//cell value becomes fixed
+            solver solver = new solver(Integer.parseInt(delay_input.getText()));
+            Thread t2 = new Thread(solver);
+            t2.start();
+            System.out.println("Solving...");
+            Clear.setEnabled(false);
+        };
     }
+
     /*
     \Function below clears the GUI
     sets the array to 0
