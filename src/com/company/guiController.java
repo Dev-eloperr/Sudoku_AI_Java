@@ -70,9 +70,12 @@ Initializes GUI with the given content from the array
         }
         add(grid);
 
-        JLabel timer_delay = new JLabel("Set Delay(in ms)");
+        JLabel timer_delay = new JLabel("Set step Delay(in ms)");
         JTextField delay_input = new JTextField("5");
         timer_delay.setHorizontalAlignment(SwingConstants.CENTER);
+        delay_input.setHorizontalAlignment(SwingConstants.CENTER);
+        delay_input.setFont(new Font("Arial", Font.ITALIC, 28));
+        //delay_input.setPreferredSize(new Dimension(225,30));
         buttons.add(timer_delay);
         buttons.add(delay_input);
 
