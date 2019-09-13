@@ -1,5 +1,6 @@
 package com.company;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
@@ -8,13 +9,50 @@ class solver implements Runnable{ //Implemented as a Thread to avoid freezing an
     //Chooses a box with MINIMUM VALUES REMAINING (It acts as a heuristic which optimizes the search for the solution
     ArrayList<Point> sortedPoints = new ArrayList<>(); //It stores the sorted points according
                                                 // to box with least number of values unfilled
-    public void run(){              //acts as a constructor for the class, works with Thread.start function
+    public void run(){//acts as a constructor for the class, works with Thread.start function
+
         setSortedPoints();          //sets sorted point
-        if(getResult())             //calls the solving function
-            Main.gui.sud.printArray();
+        //new addition
+
+        if (Main.checkSol) {
+            int checkSolved=0,temp,i,j, err_i=0,err_j=0;
+
+            for (Point pointIndex : sortedPoints) {
+                if (Main.sudoku_array[(int) pointIndex.getX()][(int) pointIndex.getY()] != 0) {
+                    i = (int) pointIndex.getX();
+                    j = (int) pointIndex.getY();
+
+                    temp=Main.sudoku_array[i][j];
+                    Main.sudoku_array[i][j]=0;
+                    if (temp!=0 && !checkConstraint(temp, i, j)) {
+                        err_i=i;
+                        err_j=j;
+                        checkSolved = 1;
+                        Main.sudoku_array[i][j]=temp;
+                        break;
+                    }
+                    Main.sudoku_array[i][j]=temp;
+
+                }
+            }
+            if (checkSolved==0){
+                JOptionPane.showMessageDialog(null,"correct");
+            }else {
+                //System.out.println(err_i+" "+i+" "+err_j+" "+j);
+                Main.gui.errorCell(err_i,err_j);
+                //JOptionPane.showMessageDialog(null,"Wrong");
+            }
+        }
+        else {
+
+            if (getResult()) {      //calls the solving function
+                Main.gui.sud.printArray();
+                System.out.println("Count of backtracking: " + count_iteration);
+            }
+        }
 
     }
-    int delay_time=5;
+    private int delay_time=5;
     solver(int time){
         delay_time=time;
     }
@@ -92,9 +130,12 @@ This function is soleley used for sorting the MAP by using list and default coll
         }
         return temp;
     }
+
+
     /*
     This is the MAIN function which solves the sudoku by using sortedpoints arraylist and constraints
      */
+    int count_iteration=0;
     private boolean getResult(){
         if (checkSolved()) {
             return true;
@@ -124,11 +165,12 @@ This function is soleley used for sorting the MAP by using list and default coll
                 Main.gui.refreshGUI();
                 timer();
                 if (getResult()){
+                    //count_iteration++;
                     return true;
                 }
                 else{
                     Main.sudoku_array[row_num][col_num] = 0;
-
+                    count_iteration++;
                     //Main.gui.sud.printArray();
                     Main.gui.refreshGUI();
                     timer();

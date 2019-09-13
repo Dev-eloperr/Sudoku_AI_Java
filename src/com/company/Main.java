@@ -30,6 +30,7 @@ public class Main {
     static protected int[][] sudoku_array = new int[9][9]; //Stores the sudoku
     static protected ArrayList<Point> points = new ArrayList<>(); //stores the EMPTY points
     static protected guiController gui = new guiController();//Initializes program, calls sudokuInitializer as well
+    static protected boolean checkSol = false;
 
 
     public static void main(String[] args) {

@@ -8,7 +8,7 @@ class guiController extends JFrame implements Runnable{
 This class handle GUI related functions and also allows GUI refresh whenever any move is taken by AI
  */
     private JPanel grid = new JPanel(new GridLayout(9, 9)); //Grid layout
-    private JPanel buttons = new JPanel(new GridLayout(2, 2));
+    private JPanel buttons = new JPanel(new GridLayout(2, 3));
     private JTextField[][] fieldArray = new JTextField[9][9]; //array of fields for easy extraction
 
     sudokuInitializer sud = new sudokuInitializer(); //initializes array from file
@@ -49,6 +49,7 @@ Initializes GUI with the given content from the array
                 if (Main.sudoku_array[i][j] != 0) {
                     fieldArray[i][j].setText(Main.sudoku_array[i][j] + "");
                     fieldArray[i][j].setEditable(false);
+                    fieldArray[i][j].setBackground(Color.lightGray);
                 } else
                     fieldArray[i][j].setText("");
                 fieldArray[i][j].setFont(new Font("Arial", Font.ITALIC, 24));
@@ -82,15 +83,22 @@ Initializes GUI with the given content from the array
 
         JButton solve = new JButton("Solve");//Button to compute
         JButton Clear = new JButton("Clear");//Button to compute
+        JButton CheckSol = new JButton("Checksol"); //Button to check
+
+        CheckSol.setBorder(null);
+        CheckSol.setBackground(Color.white);
+        buttons.add(CheckSol);
+
         solve.setBorder(null);
         solve.setBackground(Color.white);
         buttons.add(solve);
         buttons.setBackground(Color.white);
         add(buttons, BorderLayout.SOUTH);
         solve.addActionListener(e -> { //If the button is pressed
+            Main.checkSol = false;
             if (flag != 0) {
                 try {
-                    getText(); //takes in text from the GUI
+                    getText(true); //takes in text from the GUI
                     callSolver.run();
 
 
@@ -112,12 +120,39 @@ Initializes GUI with the given content from the array
 
         });
 
+        CheckSol.addActionListener(e -> { //If the button is pressed
+            Main.checkSol = true;
+            if (flag != 0) {
+                try {
+                    getText(false); //takes in text from the GUI
+                    callSolver.run();
+
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null,"Invalid Input");//Throws error if the input is invalid
+                    clearGUI();
+                    //flag=-1;
+                }
+            }else {
+                try {
+                    getText(false);
+                    callSolver.run();
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null,"Invalid Input");//Throws error if the input is invalid
+                    clearGUI();
+                    //flag=-1;
+                }
+            }
+
+        });
 
         Clear.setBorder(null);
         Clear.setBackground(Color.white);
         buttons.add(Clear);
         Clear.addActionListener(e -> { //If the button is pressed
             clearGUI();
+
 
         });
 
@@ -136,12 +171,13 @@ Initializes GUI with the given content from the array
          */
         callSolver = () -> {
             sud.printArray(); //debugging purpose
-            solve.setEnabled(false);//cell value becomes fixed
+
             solver solver = new solver(Integer.parseInt(delay_input.getText()));
             Thread t2 = new Thread(solver);
             t2.start();
             System.out.println("Solving...");
-            Clear.setEnabled(false);
+            //Clear.setEnabled(false);
+            //solve.setEnabled(false);//cell value becomes fixed
         };
     }
 
@@ -163,7 +199,7 @@ Initializes GUI with the given content from the array
 /*
 takes in valid input and sets the GUI cells as non editable
  */
-    private void getText() throws Exception{
+    private void getText(boolean editable) throws Exception{
         String temp;
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
@@ -171,9 +207,14 @@ takes in valid input and sets the GUI cells as non editable
                     if (!temp.equals("")) {
                         if(sud.checkValidInput(temp+""))
                             Main.sudoku_array[i][j] = Integer.parseInt(temp + "");//checks valid input, catches exception
-                        fieldArray[i][j].setEditable(false);
-                    }else
+                        if (editable) {
+                            fieldArray[i][j].setEditable(false);
+                            fieldArray[i][j].setBackground(Color.lightGray);
+                        }
+                    }else {
                         Main.points.add(new Point(i, j));
+                        Main.sudoku_array[i][j] = 0;
+                    }
             }
         }
         sud.printPoints();
@@ -188,5 +229,30 @@ Refreshes the GUI whenever AI makes some changes
             else
                 fieldArray[(int)Main.points.get(i).getX()][(int)Main.points.get(i).getY()].setText("");
     }
+    protected void errorCell(int i, int j){
+        for(int k=0,x=0,y=0;k<=Math.max(i,j);k++) {
+            if (x<i)
+                x++;
+            if (y<j)
+                y++;
+            fieldArray[x][j].setBackground(Color.red);
+            fieldArray[i][y].setBackground(Color.red);
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if (Main.points.contains(new Point(x,j)))
+                fieldArray[x][j].setBackground(Color.white);
+            else
+                fieldArray[x][j].setBackground(Color.lightGray);
+            if (Main.points.contains(new Point(i,y)))
+                fieldArray[i][y].setBackground(Color.white);
+            else
+                fieldArray[i][y].setBackground(Color.lightGray);
+
+        }
+    }
+
 
 }
