@@ -10,8 +10,9 @@
 
 
 ## Screenshots
-![Example screenshot](./img/Screenshot.png)
-![Example screenshot](./img/Screenshot2.png)
+![Example screenshot](./img/1.jpeg)
+![Example screenshot](./img/2.jpeg)
+![Example screenshot](./img/3.jpeg)
 
 ## Technologies
 * Java 8
